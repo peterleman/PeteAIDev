@@ -1,0 +1,7 @@
+<aura:component implements="lightning:homeTemplate" access="global" description="Single-column Home page template">
+    <aura:attribute name="main" type="Aura.Component[]" />
+
+    <div class="slds-p-around_medium">
+        {!v.main}
+    </div>
+</aura:component>

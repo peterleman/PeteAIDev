@@ -1,0 +1,155 @@
+.toolbar {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+    align-items: end;
+}
+
+.toolbar-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.toolbar-subtitle {
+    margin: 0.15rem 0 0;
+    color: #5c5c5c;
+    font-size: 0.8rem;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    color: #444;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.legend-swatch {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 999px;
+    border: 1px solid #16325c;
+    flex: 0 0 auto;
+}
+
+.toolbar-filter {
+    min-width: 0;
+}
+
+.content {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1.75fr) minmax(18rem, 22rem);
+    align-items: stretch;
+}
+
+.map-panel,
+.list-panel {
+    min-height: 0;
+}
+
+.map-container {
+    height: clamp(20rem, 55vh, 25rem);
+}
+
+.list-panel {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #d8dde6;
+    border-radius: 0.5rem;
+    background: #fbfbfb;
+    overflow: hidden;
+}
+
+.list-header {
+    padding: 0.85rem 1rem 0.7rem;
+    border-bottom: 1px solid #e5e5e5;
+    background: #f4f6f9;
+}
+
+.list-title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.list-subtitle {
+    margin: 0.15rem 0 0;
+    font-size: 0.78rem;
+    color: #5c5c5c;
+}
+
+.customer-list {
+    height: var(--customer-list-height, clamp(20rem, 55vh, 25rem));
+    overflow-y: auto;
+}
+
+.customer-item {
+    display: block;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 0;
+    border-bottom: 1px solid #ecebea;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.customer-item:hover,
+.customer-item:focus-visible,
+.customer-item_selected {
+    background: #eef4ff;
+    outline: none;
+}
+
+.customer-item__name,
+.customer-item__meta,
+.customer-item__address {
+    display: block;
+}
+
+.customer-item__name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #080707;
+}
+
+.customer-item__meta {
+    margin-top: 0.15rem;
+    font-size: 0.76rem;
+    color: #0176d3;
+}
+
+.customer-item__address {
+    margin-top: 0.3rem;
+    color: #444;
+    font-size: 0.76rem;
+    line-height: 1.4;
+    white-space: pre-line;
+}
+
+@media (max-width: 640px) {
+    .toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+    }
+
+    .map-container {
+        height: 20rem;
+    }
+
+    .customer-list {
+        height: 16rem;
+    }
+}
