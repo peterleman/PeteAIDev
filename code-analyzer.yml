@@ -1,0 +1,13 @@
+config_root: /home/lemanpAI/dev/myAIproject
+
+rules:
+  eslint:
+    "@salesforce-ux/slds/no-hardcoded-values-slds2":
+      disabled: true
+    "@salesforce-ux/slds/lwc-token-to-slds-hook":
+      severity: 5
+
+engines:
+  eslint:
+    eslint_config_file: "eslint.config.js"
+    auto_discover_eslint_config: false

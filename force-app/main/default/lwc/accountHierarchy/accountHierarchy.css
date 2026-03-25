@@ -1,0 +1,151 @@
+.workspace {
+    display: grid;
+    grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.sidebar,
+.detail {
+    border: 1px solid #d8dde6;
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+}
+
+.sidebar-meta {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.parent-list {
+    max-height: 36rem;
+    overflow: auto;
+    border-top: 1px solid #e5e5e5;
+}
+
+.parent-item {
+    display: block;
+    width: 100%;
+    padding: 0.85rem 0;
+    text-align: left;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+    background: transparent;
+}
+
+.parent-item:hover,
+.parent-item:focus-visible {
+    background: #f7fbff;
+    outline: none;
+}
+
+.parent-item_selected {
+    background: #eef4ff;
+}
+
+.parent-item__name,
+.parent-item__meta {
+    display: block;
+}
+
+.parent-item__name {
+    font-weight: 600;
+    color: #032d60;
+}
+
+.parent-item__meta {
+    margin-top: 0.25rem;
+    color: #5c5c5c;
+    font-size: 0.8rem;
+}
+
+.meta-divider {
+    margin: 0 0.35rem;
+    color: #8a8a8a;
+}
+
+.detail {
+    min-height: 28rem;
+    padding: 1rem;
+    background: linear-gradient(180deg, #fbfdff 0%, #ffffff 100%);
+}
+
+.detail-loading {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.parent-link {
+    color: #0b5cab;
+    text-align: left;
+}
+
+.parent-link:hover,
+.parent-link:focus-visible {
+    color: #032d60;
+    text-decoration: underline;
+    outline: none;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #032d60;
+    font-weight: 600;
+}
+
+.hero-pill_contacts {
+    background: #fff3d8;
+    color: #5c3b00;
+}
+
+.tree-shell {
+    margin-top: 1rem;
+}
+
+.detail-filters {
+    margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+    .workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+    }
+
+    .detail-header {
+        flex-direction: column;
+    }
+
+    .hero-actions {
+        justify-content: flex-start;
+    }
+}

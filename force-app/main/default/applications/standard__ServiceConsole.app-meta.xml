@@ -181,7 +181,11 @@
     <tabs>standard-Case</tabs>
     <tabs>standard-Opportunity</tabs>
     <tabs>standard-Lead</tabs>
+    <tabs>Pong</tabs>
     <workspaceConfig>
+        <mappings>
+            <tab>Pong</tab>
+        </mappings>
         <mappings>
             <tab>standard-Account</tab>
         </mappings>

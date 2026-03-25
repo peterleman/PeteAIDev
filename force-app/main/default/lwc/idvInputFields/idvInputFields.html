@@ -1,0 +1,28 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters_small">
+        <div class="slds-col slds-size_1-of-1">
+            <lightning-input
+                type="text"
+                label="Customer Number"
+                value={customerNumber}
+                onchange={handleCustomerNumberChange}
+            ></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1">
+            <lightning-input
+                type="text"
+                label="Phone"
+                value={phoneNumber}
+                onchange={handlePhoneNumberChange}
+            ></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1">
+            <lightning-input
+                type="email"
+                label="Email"
+                value={email}
+                onchange={handleEmailChange}
+            ></lightning-input>
+        </div>
+    </div>
+</template>

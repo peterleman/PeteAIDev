@@ -1,5 +1,6 @@
 import { LightningElement, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
+import { refreshApex } from '@salesforce/apex';
 import getCustomerLocations from '@salesforce/apex/CustomerMapController.getCustomerLocations';
 
 const DEFAULT_MARKER_PATH =
@@ -12,25 +13,15 @@ const SEGMENTATION_STYLES = {
     Default: { color: '#1b96ff', label: 'Unassigned' }
 };
 
-const COUNTRY_VIEWPORTS = {
-    Australia: { latitude: -25.2744, longitude: 133.7751, zoom: 4 },
-    Brazil: { latitude: -14.235, longitude: -51.9253, zoom: 4 },
-    Canada: { latitude: 56.1304, longitude: -106.3468, zoom: 4 },
-    France: { latitude: 46.2276, longitude: 2.2137, zoom: 5 },
-    Germany: { latitude: 51.1657, longitude: 10.4515, zoom: 5 },
-    India: { latitude: 20.5937, longitude: 78.9629, zoom: 4 },
-    Italy: { latitude: 41.8719, longitude: 12.5674, zoom: 5 },
-    Japan: { latitude: 36.2048, longitude: 138.2529, zoom: 5 },
-    Netherlands: { latitude: 52.1326, longitude: 5.2913, zoom: 6 },
-    Singapore: { latitude: 1.3521, longitude: 103.8198, zoom: 9 },
-    'South Africa': { latitude: -30.5595, longitude: 22.9375, zoom: 5 },
-    Spain: { latitude: 40.4637, longitude: -3.7492, zoom: 5 },
-    'United Arab Emirates': { latitude: 23.4241, longitude: 53.8478, zoom: 6 },
-    'United Kingdom': { latitude: 54.5, longitude: -2.5, zoom: 6 },
-    'United States': { latitude: 39.8283, longitude: -98.5795, zoom: 4 }
+const EUROPE_CENTER = {
+    location: {
+        Latitude: 48.5,
+        Longitude: 11.5
+    }
 };
+const EUROPE_ZOOM_LEVEL = 3;
 
-const MAX_LIST_ITEMS = 200;
+const MAX_RENDERED_ACCOUNTS = 200;
 const MIN_LIST_HEIGHT = 220;
 const VIEWPORT_BOTTOM_GAP = 24;
 
@@ -40,19 +31,28 @@ export default class CustomerLocationMap extends NavigationMixin(LightningElemen
     selectedMarkerValue;
     selectedCountry = '';
     hasRendered = false;
+    wiredLocationsResult;
     resizeHandler = () => this.updateListHeight();
 
     @wire(getCustomerLocations)
-    wiredCustomerLocations({ data, error }) {
+    wiredCustomerLocations(result) {
+        this.wiredLocationsResult = result;
+        const { data, error } = result;
         if (data) {
             this.accounts = data;
             this.errorMessage = undefined;
-            this.selectedMarkerValue = undefined;
+            if (!this.displayedAccounts.some((account) => account.recordId === this.selectedMarkerValue)) {
+                this.selectedMarkerValue = undefined;
+            }
             requestAnimationFrame(() => this.updateListHeight());
         } else if (error) {
             this.accounts = [];
-            this.errorMessage = 'Unable to load customer locations.';
+            this.errorMessage =
+                'Unable to load customer locations. Check access to the Apex controller and Account address fields.';
             this.selectedMarkerValue = undefined;
+            // Keep the error detail in the console for admins investigating runtime failures.
+            // eslint-disable-next-line no-console
+            console.error('customerLocationMap wire error', error);
         }
     }
 
@@ -85,6 +85,10 @@ export default class CustomerLocationMap extends NavigationMixin(LightningElemen
         });
     }
 
+    get displayedAccounts() {
+        return this.filteredAccounts.slice(0, MAX_RENDERED_ACCOUNTS);
+    }
+
     get countryOptions() {
         return this.buildOptions(this.accounts.map((account) => account.countryLabel));
     }
@@ -96,84 +100,60 @@ export default class CustomerLocationMap extends NavigationMixin(LightningElemen
     }
 
     get visibleListAccounts() {
-        return this.filteredAccounts.slice(0, MAX_LIST_ITEMS).map((account) => ({
+        return this.displayedAccounts.map((account) => ({
             ...account,
+            accessibleLabel: this.buildAccessibleLabel(account),
             itemClass:
-                account.recordId === this.selectedMarkerValue ? 'customer-item customer-item_selected' : 'customer-item'
+                account.recordId === this.selectedMarkerValue
+                    ? 'customer-item customer-item_selected slds-button_reset slds-size_full slds-text-align_left slds-p-around_small slds-border_bottom slds-theme_default'
+                    : 'customer-item slds-button_reset slds-size_full slds-text-align_left slds-p-around_small slds-border_bottom slds-theme_default'
         }));
     }
 
     get listSummary() {
-        const visibleCount = Math.min(this.filteredAccounts.length, MAX_LIST_ITEMS);
-        if (this.filteredAccounts.length > MAX_LIST_ITEMS) {
-            return `Showing first ${visibleCount} of ${this.filteredAccounts.length}`;
+        const visibleCount = this.displayedAccounts.length;
+        if (this.filteredAccounts.length > MAX_RENDERED_ACCOUNTS) {
+            return `Showing first ${visibleCount} of ${this.filteredAccounts.length} on the map and list`;
         }
         return `${visibleCount} customers`;
     }
 
     get mapMarkers() {
-        return this.filteredAccounts.map((account) => ({
+        return this.displayedAccounts.map((account) => ({
             value: account.recordId,
             title: account.accountName,
-            description: account.description,
             mapIcon: this.buildMarkerIcon(account.segmentation),
             location: this.buildMarkerLocation(account)
         }));
     }
 
-    get mapCenter() {
-        const centeredAccounts = this.filteredAccounts
-            .map((account) => ({
-                account,
-                viewport: COUNTRY_VIEWPORTS[account.countryLabel]
-            }))
-            .filter((item) => item.viewport);
-
-        if (!centeredAccounts.length) {
-            return undefined;
-        }
-
-        if (this.selectedCountry && centeredAccounts.length) {
-            const countryViewport = COUNTRY_VIEWPORTS[this.selectedCountry];
-            if (countryViewport) {
-                return {
-                    Latitude: countryViewport.latitude,
-                    Longitude: countryViewport.longitude
-                };
-            }
-        }
-
-        const total = centeredAccounts.length;
-        const latitude =
-            centeredAccounts.reduce((sum, item) => sum + item.viewport.latitude, 0) / total;
-        const longitude =
-            centeredAccounts.reduce((sum, item) => sum + item.viewport.longitude, 0) / total;
-
+    get mapOptions() {
         return {
-            Latitude: Number(latitude.toFixed(4)),
-            Longitude: Number(longitude.toFixed(4))
+            draggable: true,
+            scrollwheel: true
         };
     }
 
-    get zoomLevel() {
-        if (this.selectedCountry && COUNTRY_VIEWPORTS[this.selectedCountry]) {
-            return COUNTRY_VIEWPORTS[this.selectedCountry].zoom;
+    get mapCenter() {
+        if (this.selectedCountry) {
+            return undefined;
         }
+        return EUROPE_CENTER;
+    }
 
-        const distinctCountries = new Set(
-            this.filteredAccounts.map((account) => account.countryLabel).filter((value) => value)
-        ).size;
+    get mapZoomLevel() {
+        if (this.selectedCountry) {
+            return undefined;
+        }
+        return EUROPE_ZOOM_LEVEL;
+    }
 
-        if (distinctCountries > 8) {
-            return 2;
-        }
-        if (distinctCountries > 3) {
-            return 3;
-        }
-        if (distinctCountries > 1) {
-            return 4;
-        }
-        return 5;
+    get showDefaultMap() {
+        return !this.selectedCountry;
+    }
+
+    get showFilteredMap() {
+        return !!this.selectedCountry;
     }
 
     handleCountryChange(event) {
@@ -184,17 +164,23 @@ export default class CustomerLocationMap extends NavigationMixin(LightningElemen
     handleMarkerSelect(event) {
         const recordId = event.target.selectedMarkerValue || event.detail.selectedMarkerValue;
         this.selectedMarkerValue = recordId;
-        if (!recordId) {
-            return;
+        if (recordId) {
+            this.navigateToAccount(recordId);
         }
-
-        this.navigateToAccount(recordId);
     }
 
     handleListItemClick(event) {
         const { recordId } = event.currentTarget.dataset;
         this.selectedMarkerValue = recordId;
         this.navigateToAccount(recordId);
+    }
+
+    handleRetry() {
+        this.errorMessage = undefined;
+        this.selectedMarkerValue = undefined;
+        if (this.wiredLocationsResult) {
+            refreshApex(this.wiredLocationsResult);
+        }
     }
 
     navigateToAccount(recordId) {
@@ -209,10 +195,10 @@ export default class CustomerLocationMap extends NavigationMixin(LightningElemen
     }
 
     get segmentationLegend() {
-        return ['Gold', 'Silver', 'Bronze'].map((name) => ({
+        return ['Gold', 'Silver', 'Bronze', 'Default'].map((name) => ({
             key: name,
-            label: name,
-            style: `background-color: ${SEGMENTATION_STYLES[name].color};`
+            label: SEGMENTATION_STYLES[name].label,
+            swatchClass: `legend-swatch legend-swatch_${name.toLowerCase()} slds-var-m-right_xx-small slds-shrink-none`
         }));
     }
 
@@ -245,6 +231,10 @@ export default class CustomerLocationMap extends NavigationMixin(LightningElemen
         );
 
         return [{ label: 'All', value: '' }, ...uniqueValues.map((value) => ({ label: value, value }))];
+    }
+
+    buildAccessibleLabel(account) {
+        return [account.accountName, account.countryLabel, account.description].filter((value) => value).join(', ');
     }
 
     updateListHeight() {

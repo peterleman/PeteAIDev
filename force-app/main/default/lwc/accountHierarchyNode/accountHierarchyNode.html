@@ -1,0 +1,104 @@
+<template>
+    <article class={nodeClass}>
+        <div class="node-header">
+            <div class="node-main">
+                <template if:true={hasChildren}>
+                    <template if:false={isRoot}>
+                        <button
+                            class="branch-toggle slds-button slds-button_icon slds-button_icon-border-filled"
+                            onclick={handleToggleBranch}
+                            type="button"
+                            title="Expand or collapse branch"
+                        >
+                            <lightning-icon
+                                icon-name={branchIconName}
+                                alternative-text="Expand or collapse branch"
+                                size="x-small"
+                            ></lightning-icon>
+                        </button>
+                    </template>
+                </template>
+                <template if:true={isRoot}>
+                    <span class="branch-placeholder"></span>
+                </template>
+                <template if:false={hasChildren}>
+                    <span class="branch-placeholder"></span>
+                </template>
+
+                <span class={nodeBadgeClass}>{node.totalContactCount}</span>
+
+                <div class="node-copy">
+                    <button
+                        class="node-link slds-button_reset"
+                        data-record-id={node.recordId}
+                        data-object-api-name="Account"
+                        onclick={handleNavigate}
+                        type="button"
+                    >
+                        {node.name}
+                    </button>
+                    <p class="node-meta slds-text-body_small slds-text-color_weak">
+                        {node.directChildCount} direct children • {node.totalDescendantCount} descendants •
+                        {node.totalContactCount} contacts
+                    </p>
+                </div>
+            </div>
+
+            <template if:true={hasContacts}>
+                <button
+                    class="contact-toggle"
+                    onclick={handleToggleContacts}
+                    type="button"
+                    title={contactToggleLabel}
+                >
+                    {node.contactCount}
+                </button>
+            </template>
+        </div>
+
+        <template if:true={showContacts}>
+            <div class="contact-panel">
+                <template for:each={node.contacts} for:item="contact">
+                    <article key={contact.recordId} class="contact-card">
+                        <button
+                            class="contact-link slds-button_reset"
+                            data-record-id={contact.recordId}
+                            data-object-api-name="Contact"
+                            onclick={handleNavigate}
+                            type="button"
+                        >
+                            {contact.name}
+                        </button>
+                        <template if:true={contact.title}>
+                            <p class="slds-text-body_small slds-text-color_weak">{contact.title}</p>
+                        </template>
+                        <div class="contact-details slds-text-body_small">
+                            <template if:true={contact.email}>
+                                <span>{contact.email}</span>
+                            </template>
+                            <template if:true={contact.phone}>
+                                <span>{contact.phone}</span>
+                            </template>
+                        </div>
+                    </article>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={showChildren}>
+            <div class="children">
+                <template for:each={node.children} for:item="child">
+                    <c-account-hierarchy-node
+                        key={child.recordId}
+                        node={child}
+                        expand-all-contacts={expandAllContacts}
+                        contact-toggle-signal={contactToggleSignal}
+                        expand-all-branches={expandAllBranches}
+                        branch-toggle-signal={branchToggleSignal}
+                        onnavigate={handleNavigate}
+                    ></c-account-hierarchy-node>
+                </template>
+            </div>
+        </template>
+    </article>
+</template>

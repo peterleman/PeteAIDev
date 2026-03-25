@@ -1,0 +1,11 @@
+model = "gpt-5.4"
+
+[mcp_servers.salesforce-dx]
+command = "bash"
+args = ["-lc", "ps -eo pid=,cmd= | awk '/sf-mcp-server/ && /--orgs DEFAULT_TARGET_ORG/ && /--tools run_apex_test/ {print $1}' | xargs -r bash -lc 'kill -9 \"$@\"' bash 2>/dev/null || true; exec npx -y @salesforce/mcp --orgs DEFAULT_TARGET_ORG --toolsets orgs,metadata,data,users --tools run_apex_test --allow-non-ga-tools"]
+
+[projects."/home/lemanpAI/dev/myAIproject"]
+trust_level = "trusted"
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.4"

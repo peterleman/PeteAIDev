@@ -1,19 +1,24 @@
 <template>
     <lightning-card title="Customer Map" icon-name="standard:account">
-        <div class="toolbar slds-p-horizontal_medium slds-p-top_medium slds-p-bottom_small">
-            <div class="toolbar-copy">
-                <p class="toolbar-title">Customer locations</p>
-                <p class="toolbar-subtitle">{resultSummary}</p>
-                <div class="legend" aria-label="Segmentation legend">
+        <div
+            class="slds-grid slds-wrap slds-gutters_small slds-grid_vertical-align-end slds-var-p-horizontal_medium slds-var-p-top_medium slds-var-p-bottom_small"
+        >
+            <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-12">
+                <p class="slds-text-title_caps slds-var-m-bottom_xx-small">Customer locations</p>
+                <p class="slds-text-body_small slds-text-color_weak">{resultSummary}</p>
+                <div
+                    class="legend slds-var-m-top_small"
+                    aria-label="Segmentation legend"
+                >
                     <template for:each={segmentationLegend} for:item="item">
                         <span key={item.key} class="legend-item">
-                            <span class="legend-swatch" style={item.style}></span>
-                            <span>{item.label}</span>
+                            <span class={item.swatchClass}></span>
+                            <span class="legend-label">{item.label}</span>
                         </span>
                     </template>
                 </div>
             </div>
-            <div class="toolbar-filter">
+            <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12">
                 <lightning-combobox
                     label="Country"
                     variant="label-hidden"
@@ -26,38 +31,62 @@
             </div>
         </div>
         <template if:true={hasMarkers}>
-            <div class="content slds-p-horizontal_medium slds-p-bottom_medium">
-                <div class="map-panel">
+            <div class="slds-grid slds-wrap slds-gutters_medium slds-var-p-horizontal_medium slds-var-p-bottom_medium">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-12">
                     <div class="map-container">
-                        <lightning-map
-                            map-markers={mapMarkers}
-                            center={mapCenter}
-                            zoom-level={zoomLevel}
-                            markers-title="Customers"
-                            onmarkerselect={handleMarkerSelect}
-                            selected-marker-value={selectedMarkerValue}
-                            list-view="hidden"
-                        >
-                        </lightning-map>
+                        <template if:true={showDefaultMap}>
+                            <lightning-map
+                                map-markers={mapMarkers}
+                                center={mapCenter}
+                                markers-title="Customers"
+                                options={mapOptions}
+                                onmarkerselect={handleMarkerSelect}
+                                selected-marker-value={selectedMarkerValue}
+                                zoom-level={mapZoomLevel}
+                                list-view="hidden"
+                            >
+                            </lightning-map>
+                        </template>
+                        <template if:true={showFilteredMap}>
+                            <lightning-map
+                                map-markers={mapMarkers}
+                                markers-title="Customers"
+                                options={mapOptions}
+                                onmarkerselect={handleMarkerSelect}
+                                selected-marker-value={selectedMarkerValue}
+                                list-view="hidden"
+                            >
+                            </lightning-map>
+                        </template>
                     </div>
                 </div>
-                <aside class="list-panel" aria-label="Customer list">
-                    <div class="list-header">
-                        <p class="list-title">Customers</p>
-                        <p class="list-subtitle">{listSummary}</p>
+                <aside
+                    class="list-panel slds-col slds-size_1-of-1 slds-large-size_4-of-12 slds-box slds-theme_default slds-scrollable_none"
+                    aria-label="Customer list"
+                >
+                    <div class="slds-var-m-bottom_small">
+                        <p class="slds-text-title_caps slds-var-m-bottom_xx-small">Customers</p>
+                        <p class="slds-text-body_small slds-text-color_weak">{listSummary}</p>
                     </div>
-                    <div class="customer-list">
+                    <div class="customer-list slds-scrollable_y">
                         <template for:each={visibleListAccounts} for:item="account">
                             <button
                                 key={account.recordId}
                                 class={account.itemClass}
                                 data-record-id={account.recordId}
+                                aria-label={account.accessibleLabel}
+                                title={account.accessibleLabel}
                                 onclick={handleListItemClick}
                                 type="button"
                             >
-                                <span class="customer-item__name">{account.accountName}</span>
-                                <span class="customer-item__meta">{account.countryLabel}</span>
-                                <span class="customer-item__address">{account.description}</span>
+                                <span class="slds-assistive-text">{account.accessibleLabel}</span>
+                                <p class="slds-text-title_bold">{account.accountName}</p>
+                                <p class="slds-var-m-top_xx-small slds-text-body_small slds-text-color_default">
+                                    {account.countryLabel}
+                                </p>
+                                <p class="customer-item__address slds-var-m-top_x-small slds-text-body_small slds-text-color_weak">
+                                    {account.description}
+                                </p>
                             </button>
                         </template>
                     </div>
@@ -65,11 +94,20 @@
             </div>
         </template>
         <template if:true={errorMessage}>
-            <div class="slds-p-around_medium slds-text-color_error">{errorMessage}</div>
+            <div class="slds-var-p-around_medium">
+                <p class="slds-text-color_error">{errorMessage}</p>
+                <lightning-button
+                    class="slds-var-m-top_small"
+                    label="Retry"
+                    onclick={handleRetry}
+                    variant="neutral"
+                >
+                </lightning-button>
+            </div>
         </template>
         <template if:true={showEmptyState}>
-            <div class="slds-p-around_medium slds-text-body_regular">
-                No accounts match the selected filters.
+            <div class="slds-var-p-around_medium slds-text-body_regular">
+                No accounts with a usable address match the selected filters.
             </div>
         </template>
     </lightning-card>

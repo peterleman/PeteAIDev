@@ -1,0 +1,83 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="utility:desktop_console">
+        <section class="game-shell">
+            <div class="mode-switcher">
+                <lightning-button
+                    label="Pong"
+                    variant={pongButtonVariant}
+                    data-game="pong"
+                    onclick={handleGameSelect}
+                ></lightning-button>
+                <lightning-button
+                    label="Road Dash"
+                    variant={carButtonVariant}
+                    data-game="car"
+                    onclick={handleGameSelect}
+                ></lightning-button>
+            </div>
+
+            <div class="header">
+                <div>
+                    <div class="score">{scoreboardLabel}</div>
+                    <div class="subscore">{secondaryScoreLabel}</div>
+                    <p class="status">{statusMessage}</p>
+                </div>
+
+                <div class="controls">
+                    <lightning-button
+                        label={startPauseLabel}
+                        variant="brand"
+                        onclick={handleStartPause}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Reset"
+                        variant="neutral"
+                        onclick={handleReset}
+                    ></lightning-button>
+                </div>
+            </div>
+
+            <div class="arena-frame">
+                <template lwc:if={isPongActive}>
+                    <div
+                        class="arena pong-arena"
+                        style={boardStyle}
+                        onclick={handleBoardClick}
+                        aria-label="Pong game board"
+                        role="application"
+                    >
+                        <div class="paddle" style={leftPaddleStyle}></div>
+                        <div class="paddle" style={rightPaddleStyle}></div>
+                        <div class="ball" style={ballStyle}></div>
+                    </div>
+                </template>
+
+                <template lwc:else>
+                    <div
+                        class="arena car-arena"
+                        style={boardStyle}
+                        onclick={handleBoardClick}
+                        aria-label="Road dash game board"
+                        role="application"
+                    >
+                        <div class="lane-marker lane-marker_left"></div>
+                        <div class="lane-marker lane-marker_right"></div>
+                        <template lwc:if={showCrashFlash}>
+                            <div class="crash-flash"></div>
+                        </template>
+                        <template for:each={renderedObstacles} for:item="obstacle">
+                            <div key={obstacle.id} class={obstacle.className} style={obstacle.style}></div>
+                        </template>
+                        <div class={playerCarClass} style={carPlayerStyle}></div>
+                    </div>
+                </template>
+            </div>
+
+            <div class="footer">
+                <div><span>{primaryInstruction}</span></div>
+                <div><span>{secondaryInstruction}</span></div>
+                <div><span>Reset:</span> R</div>
+            </div>
+        </section>
+    </lightning-card>
+</template>

@@ -1,29 +1,5 @@
 public with sharing class CustomerMapController {
-    private static final Map<String, String> COUNTRY_CODE_TO_LABEL = new Map<String, String>{
-        'US' => 'United States',
-        'GB' => 'United Kingdom',
-        'UK' => 'United Kingdom',
-        'FR' => 'France',
-        'AE' => 'United Arab Emirates'
-    };
-
-    private static final Map<String, String> COUNTRY_ALIAS_TO_LABEL = new Map<String, String>{
-        'UNITED STATES' => 'United States',
-        'UNITED STATES OF AMERICA' => 'United States',
-        'USA' => 'United States',
-        'US' => 'United States',
-        'U.S.' => 'United States',
-        'U.S.A.' => 'United States',
-        'UNBITED STATES' => 'United States',
-        'UNITED KINGDOM' => 'United Kingdom',
-        'UK' => 'United Kingdom',
-        'GREAT BRITAIN' => 'United Kingdom',
-        'ENGLAND' => 'United Kingdom',
-        'SINGAPORE' => 'Singapore',
-        'FRANCE' => 'France',
-        'UAE' => 'United Arab Emirates',
-        'UNITED ARAB EMIRATES' => 'United Arab Emirates'
-    };
+    private static Map<String, String> countryCodeToLabel;
 
     public class AccountMapMarker {
         @AuraEnabled public Id recordId;
@@ -48,50 +24,54 @@ public with sharing class CustomerMapController {
             postalCode = firstNonBlank(accountRecord.BillingPostalCode, accountRecord.ShippingPostalCode);
             country = firstNonBlank(accountRecord.BillingCountry, accountRecord.ShippingCountry);
             countryCode = firstNonBlank(accountRecord.BillingCountryCode, accountRecord.ShippingCountryCode);
-            countryLabel = CustomerMapController.normalizeCountry(
-                country,
-                countryCode,
-                state,
-                street
-            );
+            countryLabel = CustomerMapController.resolveCountryLabel(country, countryCode);
             description = CustomerMapController.formatAddress(street, city, state, postalCode, countryLabel);
+        }
+
+        public Boolean hasUsableLocation() {
+            return String.isNotBlank(countryLabel)
+                && (
+                    String.isNotBlank(street)
+                    || String.isNotBlank(city)
+                    || String.isNotBlank(state)
+                    || String.isNotBlank(postalCode)
+                );
         }
     }
 
-    private static String normalizeCountry(String country, String countryCode, String state, String street) {
-        String normalizedCode = String.isNotBlank(countryCode) ? countryCode.trim().toUpperCase() : null;
-        if (String.isNotBlank(normalizedCode) && COUNTRY_CODE_TO_LABEL.containsKey(normalizedCode)) {
-            return COUNTRY_CODE_TO_LABEL.get(normalizedCode);
-        }
-
-        String normalizedCountry = String.isNotBlank(country) ? country.trim().toUpperCase() : null;
-        if (String.isNotBlank(normalizedCountry) && COUNTRY_ALIAS_TO_LABEL.containsKey(normalizedCountry)) {
-            return COUNTRY_ALIAS_TO_LABEL.get(normalizedCountry);
-        }
-
+    private static String resolveCountryLabel(String country, String countryCode) {
         if (String.isNotBlank(country)) {
             return country.trim();
         }
 
-        String normalizedState = String.isNotBlank(state) ? state.trim().toUpperCase() : null;
-        if (String.isNotBlank(normalizedState) && COUNTRY_ALIAS_TO_LABEL.containsKey(normalizedState)) {
-            return COUNTRY_ALIAS_TO_LABEL.get(normalizedState);
+        String normalizedCode = String.isNotBlank(countryCode) ? countryCode.trim().toUpperCase() : null;
+        if (String.isBlank(normalizedCode)) {
+            return null;
         }
 
-        String lastStreetLine = getLastMeaningfulLine(street);
-        String upperStreet = String.isNotBlank(lastStreetLine) ? lastStreetLine.toUpperCase() : null;
-        if (String.isNotBlank(upperStreet)) {
-            if (COUNTRY_ALIAS_TO_LABEL.containsKey(upperStreet)) {
-                return COUNTRY_ALIAS_TO_LABEL.get(upperStreet);
-            }
-            for (String alias : COUNTRY_ALIAS_TO_LABEL.keySet()) {
-                if (upperStreet.contains(alias)) {
-                    return COUNTRY_ALIAS_TO_LABEL.get(alias);
-                }
+        Map<String, String> codeToLabel = getCountryCodeToLabel();
+        if (codeToLabel.containsKey(normalizedCode)) {
+            return codeToLabel.get(normalizedCode);
+        }
+
+        return normalizedCode;
+    }
+
+    private static Map<String, String> getCountryCodeToLabel() {
+        if (countryCodeToLabel != null) {
+            return countryCodeToLabel;
+        }
+
+        countryCodeToLabel = new Map<String, String>();
+        Schema.DescribeFieldResult describeResult = Account.BillingCountryCode.getDescribe();
+        for (Schema.PicklistEntry entry : describeResult.getPicklistValues()) {
+            String value = entry.getValue();
+            if (String.isNotBlank(value)) {
+                countryCodeToLabel.put(value.trim().toUpperCase(), entry.getLabel());
             }
         }
 
-        return countryCode;
+        return countryCodeToLabel;
     }
 
     private static String formatAddress(String street, String city, String state, String postalCode, String countryLabel) {
@@ -128,21 +108,6 @@ public with sharing class CustomerMapController {
         return secondValue;
     }
 
-    private static String getLastMeaningfulLine(String multilineValue) {
-        if (String.isBlank(multilineValue)) {
-            return null;
-        }
-
-        List<String> lines = multilineValue.replace('\r', '\n').split('\n');
-        for (Integer index = lines.size() - 1; index >= 0; index--) {
-            if (String.isNotBlank(lines[index])) {
-                return lines[index].trim();
-            }
-        }
-
-        return null;
-    }
-
     @AuraEnabled(cacheable=true)
     public static List<AccountMapMarker> getCustomerLocations() {
         List<Account> accounts = [
@@ -168,7 +133,10 @@ public with sharing class CustomerMapController {
 
         List<AccountMapMarker> markers = new List<AccountMapMarker>();
         for (Account accountRecord : accounts) {
-            markers.add(new AccountMapMarker(accountRecord));
+            AccountMapMarker marker = new AccountMapMarker(accountRecord);
+            if (marker.hasUsableLocation()) {
+                markers.add(marker);
+            }
         }
         return markers;
     }

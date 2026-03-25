@@ -7,6 +7,12 @@
                 <identifier>customerLocationMapHome</identifier>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>c:accountHierarchy</componentName>
+                <identifier>accountHierarchyHome</identifier>
+            </componentInstance>
+        </itemInstances>
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>

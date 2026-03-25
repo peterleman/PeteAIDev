@@ -1,0 +1,148 @@
+.node {
+    position: relative;
+    margin-left: 1.25rem;
+    padding: 0.9rem 0 0.9rem 1rem;
+    border-left: 2px solid #d8dde6;
+}
+
+.node_root {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+}
+
+.node-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.node-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.branch-toggle {
+    --slds-c-button-color-border: #bcc7d4;
+    --slds-c-button-color-background: #ffffff;
+    margin-top: 0.1rem;
+}
+
+.branch-placeholder {
+    width: 1.75rem;
+    flex-shrink: 0;
+}
+
+.node-badge,
+.contact-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 999px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.node-badge {
+    background: radial-gradient(circle at 30% 30%, #fffef7 0%, #ffe8b5 42%, #f9b54c 100%);
+    border: 2px solid #e6a23c;
+    color: #5c3b00;
+}
+
+.node-badge_global {
+    background: radial-gradient(circle at 30% 30%, #ffffff 0%, #d8ecff 38%, #7fb8ff 100%);
+    border-color: #5da2f7;
+    color: #032d60;
+}
+
+.node-copy {
+    min-width: 0;
+}
+
+.node-link,
+.contact-link {
+    color: #0b5cab;
+    text-align: left;
+}
+
+.node-link {
+    font-weight: 600;
+}
+
+.node-link:hover,
+.node-link:focus-visible,
+.contact-link:hover,
+.contact-link:focus-visible {
+    color: #032d60;
+    text-decoration: underline;
+    outline: none;
+}
+
+.node-meta {
+    margin-top: 0.15rem;
+}
+
+.contact-toggle {
+    cursor: pointer;
+    padding: 0;
+    border: 2px solid #e6a23c;
+    background: #fff;
+    color: #5c3b00;
+}
+
+.contact-toggle:hover,
+.contact-toggle:focus-visible {
+    background: #fff6df;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(251, 182, 76, 0.22);
+}
+
+.contact-panel {
+    margin-top: 0.75rem;
+    margin-left: 4rem;
+    display: grid;
+    gap: 0.6rem;
+}
+
+.contact-card {
+    padding: 0.75rem 0.9rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.75rem;
+    background: #fbfdff;
+}
+
+.contact-link {
+    font-weight: 600;
+}
+
+.contact-details {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.4rem;
+    color: #5c5c5c;
+}
+
+.children {
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 640px) {
+    .node {
+        margin-left: 0.5rem;
+        padding-left: 0.65rem;
+    }
+
+    .node-header {
+        flex-direction: column;
+    }
+
+    .contact-panel {
+        margin-left: 0;
+    }
+}

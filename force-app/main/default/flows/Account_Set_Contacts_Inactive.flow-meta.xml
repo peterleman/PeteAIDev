@@ -2,26 +2,34 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <interviewLabel>Account Set Contacts Inactive {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Account Set Contacts Inactive</label>
-    <processMetadataValues>
-        <name>BuilderType</name>
-        <value>
-            <stringValue>LightningFlowBuilder</stringValue>
-        </value>
-    </processMetadataValues>
-    <processMetadataValues>
-        <name>CanvasMode</name>
-        <value>
-            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
-        </value>
-    </processMetadataValues>
-    <processType>AutoLaunchedFlow</processType>
+    <assignments>
+        <name>Set_Contact_Inactive</name>
+        <label>Set Contact Inactive</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Loop_Through_Contacts.Active__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>No</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Contacts_To_Update</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Through_Contacts</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Through_Contacts</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Was_Just_Set_Inactive</name>
         <label>Was Just Set Inactive</label>
-        <locationX>176</locationX>
-        <locationY>167</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Changed_To_Inactive</name>
@@ -46,34 +54,13 @@
             <label>Changed To Inactive</label>
         </rules>
     </decisions>
-    <assignments>
-        <name>Set_Contact_Inactive</name>
-        <label>Set Contact Inactive</label>
-        <locationX>176</locationX>
-        <locationY>287</locationY>
-        <assignmentItems>
-            <assignToReference>Loop_Through_Contacts.Active__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>No</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>Contacts_To_Update</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>Loop_Through_Contacts</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_Through_Contacts</targetReference>
-        </connector>
-    </assignments>
+    <interviewLabel>Account Set Contacts Inactive {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account Set Contacts Inactive</label>
     <loops>
         <name>Loop_Through_Contacts</name>
         <label>Loop Through Contacts</label>
-        <locationX>176</locationX>
-        <locationY>397</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <collectionReference>Get_Related_Contacts</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -83,11 +70,24 @@
             <targetReference>Update_Related_Contacts</targetReference>
         </noMoreValuesConnector>
     </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
     <recordLookups>
         <name>Get_Related_Contacts</name>
         <label>Get Related Contacts</label>
-        <locationX>176</locationX>
-        <locationY>287</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Loop_Through_Contacts</targetReference>
@@ -114,12 +114,12 @@
     <recordUpdates>
         <name>Update_Related_Contacts</name>
         <label>Update Related Contacts</label>
-        <locationX>176</locationX>
-        <locationY>505</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <inputReference>Contacts_To_Update</inputReference>
     </recordUpdates>
     <start>
-        <locationX>50</locationX>
+        <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Was_Just_Set_Inactive</targetReference>
