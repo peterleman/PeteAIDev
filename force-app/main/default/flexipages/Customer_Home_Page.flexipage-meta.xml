@@ -3,13 +3,13 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>c:customerLocationMap</componentName>
+                <componentName>customerLocationMap</componentName>
                 <identifier>customerLocationMapHome</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentName>c:accountHierarchy</componentName>
+                <componentName>accountHierarchy</componentName>
                 <identifier>accountHierarchyHome</identifier>
             </componentInstance>
         </itemInstances>
@@ -18,7 +18,7 @@
     </flexiPageRegions>
     <masterLabel>Customer Home Page</masterLabel>
     <template>
-        <name>c:customerHomePageTemplate</name>
+        <name>customerHomePageTemplate</name>
     </template>
     <type>HomePage</type>
 </FlexiPage>

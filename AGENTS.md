@@ -31,6 +31,9 @@ These instructions are always in effect unless the user gives a more specific in
 - Do not assume new metadata is visible or usable just because it deploys successfully.
 - When creating or changing tabs, verify tab visibility, app navigation inclusion, and user/profile/permission-set access in the target org.
 - When creating or changing objects or fields, verify object permissions, field-level security, record type impact, layout visibility, and any permission set or profile updates required for the intended users.
+- Always check field-level security for every field that is newly created, newly deployed, referenced by Apex, referenced by LWC/Aura/Flow/UI metadata, or required for runtime behavior in the target org.
+- Do not treat a field as usable after deploy until field-level security has been checked for the actual target user or target permission set/profile in that org.
+- If a field exists in metadata but is not visible at runtime, assume FLS is a possible cause and verify it before concluding that the field is missing or changing source code.
 - When creating or changing LWCs, Aura components, flows, or Apex-backed UI, verify CRUD/FLS implications, runtime access, and whether additional permission metadata is required.
 - If a change needs new access, prefer the narrowest safe permission set or targeted security update instead of broad profile changes unless the user explicitly wants profile-based configuration.
 - Never stop at metadata creation when access is likely required; either apply the needed security change or explicitly report that access remains to be configured.
@@ -39,9 +42,23 @@ These instructions are always in effect unless the user gives a more specific in
 - Check the repo state before making assumptions.
 - Check the org state before making assumptions when the task depends on runtime or deployed behavior.
 - Never guess which Salesforce org, alias, or environment to use; resolve it explicitly before running org actions.
+- Treat org-to-source alignment as a first-class concern.
+- If local source, git state, scratch org state, sandbox/dev org state, or retrieved metadata may be out of sync, call out that risk explicitly before making changes or deploying.
+- Do not quietly mix metadata from different orgs into the same local working copy without stating the consequence and confirming that this is the intended source-alignment model.
+- If one local repo is being used against multiple orgs, explicitly state which org the local source is currently aligned with, which org is only a deployment target, and what drift risk remains.
+- When retrieving metadata from one org and deploying to another, warn that the local repo may no longer represent a single org faithfully unless that cross-org synchronization is intentional.
+- If the user appears to expect a scratch-org-aligned local copy but the repo is still aligned to another org, stop and say so clearly before continuing.
+- Prefer separate local working copies, branches, or worktrees when different orgs need distinct source alignment.
+- If the user asks to create or start working in a scratch org, assume they also want an isolated local working structure for that scratch org unless they explicitly say otherwise.
+- The default scratch-org setup should include a distinct local folder or git worktree/clone, a clearly named branch for that scratch-org effort, and explicit identification of which repo copy is aligned to that scratch org.
+- When creating a new local project folder, clone, worktree, or scratch-org workspace from this repo, copy this `AGENTS.md` file into that new project structure unless the user explicitly asks not to.
+- Do not keep using a dev-org-aligned local repo as the implementation workspace for a new scratch org unless the user explicitly approves that shared-source model after the risk is explained.
 - Prefer targeted changes over large sweeping updates.
 - Identify the exact failure or requirement first, then fix that exact issue.
 - Do not leave related broken references behind.
+- When deploying, moving, or validating metadata across orgs, do not change source metadata just to make it fit the target org unless the user explicitly approves that source change first.
+- If metadata fails to deploy because the target org is missing fields, settings, licenses, features, or dependencies, stop and report the missing dependency instead of rewriting the source as a workaround.
+- Treat source compatibility changes made only for a specific scratch org or target org as out of scope unless the user explicitly asks for that broader behavior change.
 
 ## Related Component Review
 - When editing an LWC, inspect its HTML, JS, CSS, XML meta file, tests, labels, and any directly connected Apex or message/channel usage.
@@ -55,6 +72,8 @@ These instructions are always in effect unless the user gives a more specific in
 - Verify uncertain facts in current official documentation before acting.
 - If documentation is unclear or conflicting, say so explicitly and choose the safest implementation.
 - If a known fact cannot be verified during the task, state that limitation instead of presenting assumptions as truth.
+- If a Salesforce feature, org setting, license, toggle, or activation step is required and cannot be enabled purely through the current metadata deploy path, stop and explicitly ask the user to enable it in the target org before continuing.
+- Do not continue with workaround-driven source changes when the real blocker is an org feature or platform activation that the user can enable.
 
 ## Safety
 - Do not make destructive git changes unless explicitly requested.
@@ -69,6 +88,7 @@ These instructions are always in effect unless the user gives a more specific in
 - For Apex changes, run the most relevant tests available.
 - For LWC or UI changes, verify in the org whenever feasible.
 - For Flow changes, validate the trigger path and check for unintended repeat execution.
+- For field-dependent behavior, verify both metadata existence and field-level security/runtime visibility before declaring the field available.
 - If a test was not run, say so explicitly.
 - If deployment was not done, say so explicitly.
 - If verification was blocked, explain the exact blocker and the next useful step.
