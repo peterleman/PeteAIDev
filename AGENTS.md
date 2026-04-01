@@ -1,5 +1,29 @@
 # AGENTS.md
 
+## Stop Conditions And Hard Rules
+Read and follow this section first. These rules override everything else.
+
+- Never change source code or metadata to work around missing target-org features, fields, settings, licenses, dependencies, or activation steps; stop and report the blocker instead.
+- Never hardcode Salesforce record IDs, record names, org-specific values, tenant-specific data assumptions, or data-dependent logic unless the user explicitly asks for that exact hardcoded behavior.
+- Never guess which Salesforce org, alias, or environment to use; resolve it explicitly before running org actions.
+- Always state whether the local source is aligned with the org being inspected, validated, or deployed to. If it is not aligned, state the drift risk explicitly before continuing.
+- Never claim something was created, deployed, tested, or verified unless it was actually verified.
+- If verification was not performed, say so explicitly.
+- Do not guess when a fact can be checked.
+- Change only what is required for the requested outcome.
+
+## Required Salesforce Task Flow
+For any Salesforce task, follow this order:
+
+1. Identify the exact requested outcome.
+2. Identify the target org explicitly.
+3. Check repo state and source/org alignment before making changes.
+4. Check whether the task depends on fields, settings, features, licenses, or activation that may be missing in the target org.
+5. If a dependency is missing, stop and report it instead of changing source to fit the org.
+6. Implement only the requested change.
+7. Verify the smallest useful runtime outcome in the same org that received the change.
+8. State clearly what was changed, what was verified, and what remains unverified.
+
 ## Purpose
 This file defines the default working rules for this repository.
 These instructions are always in effect unless the user gives a more specific instruction for the current task.

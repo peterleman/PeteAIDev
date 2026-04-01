@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "/home/lemanpAI/dev/myAIproject"
+    }
+  ],
+  "settings": {
+    "eslint.workingDirectories": [
+      "/home/lemanpAI/dev/myAIproject"
+    ],
+    "eslint.validate": [
+      "javascript",
+      "typescript"
+    ],
+    "eslint.options": {
+      "overrideConfigFile": "/home/lemanpAI/dev/myAIproject/.eslintrc.json"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "skills": {
+    "sf-apex": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "36b9641f75bbbf0749dfe6032f83e4a853eed79cbe61892b7fcf8d836cfccbc0"
+    },
+    "sf-deploy": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "d574aea3bb53230aba468074300cf450e139cad4449c48878d29a603c9394abc"
+    },
+    "sf-docs": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "0686a0ccac1ce5416edd724acbd8574e774f46beacbbdf9e1556cdc0fff219d5"
+    },
+    "sf-flow": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "91d22f4cdc57c3cc9951d44a0092c92634528134bc142868e432fc2545828e49"
+    },
+    "sf-lwc": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "68dea7920279d81eb17a2dd9195f359d37882eb3a482d39f90d16b5f987b301f"
+    },
+    "sf-metadata": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "4f8367fbbf610a33af3e4bf554cee74e8458e2d091d474a47933f5dde7a0b2a8"
+    },
+    "sf-permissions": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "efb56039ba196cd05fbac8e97cf191d22e7e8416f39f97b403f36093021095ec"
+    },
+    "sf-soql": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "2f369916cb660527fadf8a618a02cfee12bda21abd93a94d0d633d426e4ebe24"
+    },
+    "sf-testing": {
+      "source": "Jaganpro/sf-skills",
+      "sourceType": "github",
+      "computedHash": "c844282ffa4fbff2629b74d0cb151846568c0d4e6dcd683a53342e25ee3091d2"
+    }
+  }
+}
